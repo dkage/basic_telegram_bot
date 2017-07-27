@@ -7,21 +7,22 @@ import urllib.parse
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 
-# Do the request to the url and get content
+# Make request to Telegram servers and returns content from the HTTP request
 def get_url(url):
     response = requests.get(url)
     content = response.content.decode("utf8")
     return content
 
 
-# Calls get_url, receives returned content and returns the json
+# Gets content returned from get_url and parses as a json structure
 def get_json_from_url(url):
     content = get_url(url)
     js = json.loads(content)
     return js
 
 
-# Calls get_json_from_url from the getUpdates url
+# Creates a connection to Telegram servers (that renews each 100 sec) which gets each new message/chat update
+# Uses an update_id as offset to specify the last update received, that way getting only the latest new messages
 def get_updates(offset=None):
     url = URL + "getUpdates?timeout=100"
     if offset:
@@ -30,7 +31,7 @@ def get_updates(offset=None):
     return js
 
 
-# Checks number of updates,
+# Gets last chat id and text from the update json received
 def get_last_chat_id_and_text(updates):
     num_updates = len(updates["result"])
     last_update = num_updates - 1
@@ -39,6 +40,7 @@ def get_last_chat_id_and_text(updates):
     return text, chat_id
 
 
+# Append each update in an array, and returns the highest number id which is always the latest
 def get_last_update_id(updates):
     update_ids = []
     for update in updates["result"]:
@@ -46,12 +48,14 @@ def get_last_update_id(updates):
     return max(update_ids)
 
 
+# Sends the message to chat
 def send_message(text, chat_id):
     text = urllib.parse.quote_plus(text)
     url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
     get_url(url)
 
 
+# Echoes the message sent to bot back to chat
 def echo_all(updates):
     for update in updates["result"]:
         try:
@@ -62,6 +66,7 @@ def echo_all(updates):
             print(e)
 
 
+# Keeps script running and getting new updates
 def main():
     last_update_id = None
     while True:
@@ -72,5 +77,6 @@ def main():
         time.sleep(0.5)
 
 
+# Python main or modular check
 if __name__ == '__main__':
     main()
