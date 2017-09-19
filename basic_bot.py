@@ -7,14 +7,14 @@ import urllib.parse
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 
-# Make request to Telegram servers and returns content from the HTTP request
+# Make request to Telegram servers and returns content from the HTTP GET
 def get_url(url):
     response = requests.get(url)
     content = response.content.decode("utf8")
     return content
 
 
-# Gets content returned from get_url and parses as a json structure
+# Gets content returned from get_url() and parses as a json structure
 def get_json_from_url(url):
     content = get_url(url)
     js = json.loads(content)
@@ -64,19 +64,3 @@ def echo_all(updates):
             send_message(text, chat)
         except Exception as e:
             print(e)
-
-
-# Keeps script running and getting new updates
-def main():
-    last_update_id = None
-    while True:
-        updates = get_updates(last_update_id)
-        if len(updates["result"]) > 0:
-            last_update_id = get_last_update_id(updates) + 1
-            echo_all(updates)
-        time.sleep(0.5)
-
-
-# Python main or modular check
-if __name__ == '__main__':
-    main()
