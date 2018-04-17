@@ -1,4 +1,6 @@
 from basic_bot import *
+import time
+
 
 # Keeps script running and getting new updates
 def main():
@@ -14,4 +16,3 @@ def main():
 # Python main or modular check
 if __name__ == '__main__':
     main()
-
